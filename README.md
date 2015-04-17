@@ -20,11 +20,11 @@ Target Alfresco server must have CORS filters enabled and configured for **Acces
 </init-param>
 ```
 
-By default Alfresco web server runs on port 8080. You may want tuning project settings in Mendex Business Modeler to use other port:
+By default Alfresco web server runs on port 8080. You may want tuning project settings in Mendix Business Modeler to use other port:
 
 ![server-settings](https://github.com/DenisVuyka/mendix-alfresco-cmis/blob/master/images/server_settings.png)
 
-## Mendex Business Modeler
+## Mendix Business Modeler
 Default domain model introduces only 4 attributes user can use with the widget: server url address, credentials (username/password) and folder path to display contents for.
 
 ![domain-model](https://github.com/DenisVuyka/mendix-alfresco-cmis/blob/master/images/domain_model.png)
