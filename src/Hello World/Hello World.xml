@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<widget id="Hello World.widget.Hello World" needsEntityContext="true" xmlns="http://www.mendix.com/widget/1.0/">
+  <name>Sample CMIS Widget</name>
+  <description>>Sample CMIS Widget</description>
+
+  <icon></icon>
+
+  <properties>
+    <property key="cmisServerUrl" type="attribute">
+      <caption>Server URL</caption>
+      <category>CMIS Settings</category>
+      <description>Server URL</description>
+      <attributeTypes>
+        <attributeType name="String"/>
+      </attributeTypes>
+    </property>
+    <property key="cmisServerLogin" type="attribute">
+      <caption>Login</caption>
+      <category>CMIS Settings</category>
+      <description>Server Login</description>
+      <attributeTypes>
+        <attributeType name="String"/>
+      </attributeTypes>
+    </property>
+    <property key="cmisServerPassword" type="attribute">
+      <caption>Password</caption>
+      <category>CMIS Settings</category>
+      <description>Server Password</description>
+      <attributeTypes>
+        <attributeType name="String"/>
+      </attributeTypes>
+    </property>
+    <property key="cmisRootFolder" type="attribute">
+      <caption>Folder</caption>
+      <category>CMIS Settings</category>
+      <description>Current Folder</description>
+      <attributeTypes>
+        <attributeType name="String"/>
+      </attributeTypes>
+    </property>
+  </properties>
+</widget>
+
