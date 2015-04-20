@@ -4,11 +4,13 @@ Simple Alfresco CMIS integration for Mendix widgets
 ## Overview
 This is just a POC demonstrating the ease of Alfresco CMIS integration (via Browser binding and pure JavaScript) into Mendex widgets. Implementation is based on a standard ['Hello World'](https://world.mendix.com/display/howto50/Creating+a+Basic+Hello+World+Custom+Widget) widget. 
 
-![widget1](https://github.com/DenisVuyka/mendix-alfresco-cmis/blob/master/images/widget_01.png)
+### Folder List Widget
+This widget displays a list of folders contained within the root one. The latter is determined by the 'cmisRootFolder' attribute of the domain model.
 
-![widget2](https://github.com/DenisVuyka/mendix-alfresco-cmis/blob/master/images/widget_02.png)
+### Folder Content Widget
+This widget displays a list of folders and documents contained within the root or current folder. If both Folder List and Folder Content widgets are placed on the same page then Folder List one will automatically display the content of the folder clicked on the Folder Content widget. If selected folder has no content an appropriate message will be rendered to user.
 
-![widget3](https://github.com/DenisVuyka/mendix-alfresco-cmis/blob/master/images/widget_03.png)
+![widget1](https://github.com/DenisVuyka/mendix-alfresco-cmis/blob/master/images/widget.png)
 
 ## Prerequisites
 Target Alfresco server must have CORS filters enabled and configured for **Access-Control-Allow-Origin** header. This can be done by uncommenting corresponding sections within '_{install-path}/tomcat/webapps/alfresco/WEB-INF/web.xml_'. For development purposes you can allow calls from all origins:
@@ -29,9 +31,9 @@ Default domain model introduces only 4 attributes user can use with the widget: 
 
 ![domain-model](https://github.com/DenisVuyka/mendix-alfresco-cmis/blob/master/images/domain_model.png)
 
-For debugging purposes those fields are displayed on the widget, but can be easily removed later on:
+Both widgets are presented within 50/50 table like shown below:
 
-![modeler1](https://github.com/DenisVuyka/mendix-alfresco-cmis/blob/master/images/modeler_01.png)
+![modeler1](https://github.com/DenisVuyka/mendix-alfresco-cmis/blob/master/images/layout.png)
 
 Modeler users can change corresponding attributes from within Properties pane, there should be a separate 'CMIS Settings' category:
 
