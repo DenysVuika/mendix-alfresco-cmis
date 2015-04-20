@@ -3,9 +3,11 @@
 	<clientModule name="Hello World" version="1.0.0" xmlns="http://www.mendix.com/clientModule/1.0/">
 		<widgetFiles>
 			<widgetFile path="Hello World/Hello World.xml"/>
+            <widgetFile path="FolderList/FolderList.xml"/>
 		</widgetFiles>
 		<files>
 			<file path="Hello World/widget/"/>
+          <file path="FolderList/widget/"/>
 		</files>
 	</clientModule>
 </package>

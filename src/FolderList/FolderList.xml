@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<widget id="Hello World.widget.Hello World" needsEntityContext="true" xmlns="http://www.mendix.com/widget/1.0/">
-  <name>Folder Content</name>
-  <description>>Sample CMIS Widget</description>
+<widget id="FolderList.widget.FolderList" needsEntityContext="true" xmlns="http://www.mendix.com/widget/1.0/">
+  <name>Folder List</name>
+  <description>The description of this widget.</description>
 
   <icon></icon>
 

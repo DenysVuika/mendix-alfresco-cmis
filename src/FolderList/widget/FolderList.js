@@ -2,33 +2,33 @@
 /*global mx, define, require, browser, devel, console, btoa, alert */
 /*mendix */
 /*
-    Hello World
+    FolderList
     ========================
 
-    @file      : Hello World.js
-    @version   : 1.0.0
+    @file      : FolderList.js
+    @version   : 1.0.0.0
     @author    : Denis Vuyka
-    @date      : Fri, 17 Apr 2015 05:58:15 GMT
+    @date      : Mon, 20 Apr 2015 12:03:29 GMT
     @copyright : Denis Vuyka
     @license   : MIT
 
     Documentation
     ========================
-    Shows folder content
+    Shows folder list
 */
 
 // Required module list. Remove unnecessary modules, you can always get them back from the boilerplate.
 require({
-    packages: [{ name: 'jquery', location: '../../widgets/Hello World/lib', main: 'jquery-1.11.2.min' }]
+    packages: [{ name: 'jquery', location: '../../widgets/FolderList/lib', main: 'jquery-1.11.2.min' }]
 }, [
     'dojo/_base/declare', 'mxui/widget/_WidgetBase', 'dijit/_TemplatedMixin',
     'mxui/dom', 'dojo/dom', 'dojo/query', 'dojo/dom-prop', 'dojo/dom-geometry', 'dojo/dom-class', 'dojo/dom-style', 'dojo/dom-construct', 'dojo/_base/array', 'dojo/_base/lang', 'dojo/text',
-    'jquery', 'dojo/text!Hello World/widget/template/Hello World.html'
+    'jquery', 'dojo/text!FolderList/widget/template/FolderList.html'
 ], function (declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, domQuery, domProp, domGeom, domClass, domStyle, domConstruct, dojoArray, lang, text, $, widgetTemplate) {
     'use strict';
-  
+    
     // Declare widget's prototype.
-    return declare('Hello World.widget.Hello World', [ _WidgetBase, _TemplatedMixin ], {
+    return declare('FolderList.widget.FolderList', [ _WidgetBase, _TemplatedMixin ], {
         // _TemplatedMixin will create our dom node using this HTML template.
         templateString: widgetTemplate,
 
@@ -51,8 +51,8 @@ require({
         // dijit._WidgetBase.postCreate is called after constructing the widget. Implement to do extra setup work.
         postCreate: function () {
             console.log(this.id + '.postCreate');
-            this.cmisContent = $('.cmis-folder-content');
-            this._setupEvents();            
+            this.cmisContent = $('.cmis-folder-list');
+            this._setupEvents();
         },
 
         // mxui.widget._WidgetBase.update is called when context is changed or initialized. Implement to re-render and / or fetch data.
@@ -63,7 +63,7 @@ require({
             this._resetSubscriptions();
             this._updateRendering();
             this._listFolder();
-          
+
             callback();
         },
 
@@ -86,66 +86,54 @@ require({
         uninitialize: function () {
             // Clean up listeners, helper objects, etc. There is no need to remove listeners added with this.connect / this.subscribe / this.own.
         },
+      
+        _listFolder: function () {
+          var cmisServerUrl = this._contextObj ? this._contextObj.get(this.cmisServerUrl) : "",
+              cmisServerLogin = this._contextObj ? this._contextObj.get(this.cmisServerLogin) : "",
+              cmisServerPassword = this._contextObj ? this._contextObj.get(this.cmisServerPassword) : "",
+              cmisRootFolder = this._contextObj ? this._contextObj.get(this.cmisRootFolder) : "",
+              headers = {"Authorization": "Basic " + btoa(cmisServerLogin + ":" + cmisServerPassword)};
+
+          function handleError (jqXHR, textStatus, errorThrown) {
+            alert('error getting cmis content');
+          }
+
+          function renderFolderEntries(data) {
+            var output = $('.cmis-folder-list'),
+                ul = $('<ul class="list-group">');
+            output.empty();
+            
+            data.forEach(function (entry) {
+              var li = $('<li class="list-group-item">'),
+                  props = entry.object.properties,
+                  objType = props['cmis:objectTypeId'].value;
+                  
+              if (objType !== 'cmis:folder') {
+                return;
+              }
               
-        _setupEvents: function () {          
-          var emitter = document;
-          emitter.addEventListener('cmisMessage', this._onCmisMessageReceived.bind(this));
-        },
-      
-      _onCmisMessageReceived: function (e) {
-        var msg = e.detail;
-        if (msg && msg.action) {
-          if (msg.action === 'setFolder') {
-            this._listFolder(msg.value);
+              var name = props['cmis:name'].value,
+                  icon = $('<i class="fa fa-folder-o">'),
+                  path = cmisRootFolder + props['cmis:path'].value;
+              
+              var link = $('<a href="#">');
+              link.on('click', function (e) {
+                e.preventDefault();
+                var msg = { 'action': 'setFolder', 'value': path };
+                var emitter = document;
+                emitter.dispatchEvent(new CustomEvent('cmisMessage', { detail: msg }));
+              });
+              
+              link.append(icon);
+              link.append(' ' + name);
+              li.append(link);
+              ul.append(li);
+            });
+
+            output.append(ul);
           }
-        }
-      },
-      
-      _listFolder: function (folder) {
-        var cmisServerUrl = this._contextObj ? this._contextObj.get(this.cmisServerUrl) : "",
-            cmisServerLogin = this._contextObj ? this._contextObj.get(this.cmisServerLogin) : "",
-            cmisServerPassword = this._contextObj ? this._contextObj.get(this.cmisServerPassword) : "",
-            cmisRootFolder = folder || (this._contextObj ? this._contextObj.get(this.cmisRootFolder) : ""),
-            headers = {"Authorization": "Basic " + btoa(cmisServerLogin + ":" + cmisServerPassword)};
         
-        function handleError (jqXHR, textStatus, errorThrown) {
-          alert('error getting cmis content');
-        }
-        
-        function renderFolderEntries(data) {
-          var output = $('.cmis-folder-content'),
-              ul = $('<ul class="list-group">');
-          output.empty();
-          
-          if (data.length === 0) {
-            output.append($('<h3><i class="fa fa-folder-open-o"><i> The folder is empty</h3>'));
-            return;
-          }
-          
-          data.forEach(function (entry) {
-            var li = $('<li class="list-group-item">'),
-                props = entry.object.properties,
-                objType = props['cmis:objectTypeId'].value,
-                name = props['cmis:name'].value,
-                icon = null;
-            
-            if (objType === 'cmis:folder') {
-              icon = $('<i class="fa fa-folder-o">');
-            } else if (objType === 'cmis:document') {
-              icon = $('<i class="fa fa-file-text-o">');
-            } else {
-              icon = $('<i class="fa fa-file-o">');
-            }
-            
-            li.append(icon);
-            li.append(' ' + name);
-            ul.append(li);
-          });
-          
-          output.append(ul);
-        }
-        
-        $.ajax({
+          $.ajax({
             url: cmisServerUrl + '/alfresco/cmisbrowser',
             type: 'GET',
             headers: headers,
@@ -173,24 +161,27 @@ require({
           });
         },
 
-      _updateRendering: function () {},
+        _setupEvents: function () {
+            
+        },
       
-      _resetSubscriptions: function () {
-          // Release handle on previous object, if any.
-          if (this._handle) {
-              this.unsubscribe(this._handle);
-              this._handle = null;
-          }
+        _updateRendering: function () {
+          
+        },
 
-          if (this._contextObj) {
-              this._handle = this.subscribe({
-                  guid: this._contextObj.getGuid(),
-                  callback: this._updateRendering
-              });
-          }
-        
-        var emitter = document;
-        emitter.removeEventListener('cmisMessage', this._onCmisMessageReceived);
-      }
+        _resetSubscriptions: function () {
+            // Release handle on previous object, if any.
+            if (this._handle) {
+                this.unsubscribe(this._handle);
+                this._handle = null;
+            }
+
+            if (this._contextObj) {
+                this._handle = this.subscribe({
+                    guid: this._contextObj.getGuid(),
+                    callback: this._updateRendering
+                });
+            }
+        }
     });
 });
