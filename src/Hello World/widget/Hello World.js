@@ -112,7 +112,7 @@ require({
           alert('error getting cmis content');
         }
         
-        function renderFolderEntries(data) {
+        function renderFolderEntries(folderUrl, data) {
           var output = $('.cmis-folder-content'),
               ul = $('<ul class="list-group">');
           output.empty();
@@ -136,9 +136,16 @@ require({
             } else {
               icon = $('<i class="fa fa-file-o">');
             }
-            
+                                    
             li.append(icon);
             li.append(' ' + name);
+            
+            if (objType === 'cmis:document') {
+              var downloadLink = folderUrl + '/' + name;
+              var download = $('<a class="pull-right" target="_self" href="' + downloadLink + '" download="' + name +'"><i class="fa fa-download"></i></a>');
+              li.append(download);
+            }
+            
             ul.append(li);
           });
           
@@ -157,12 +164,13 @@ require({
               }
 
               if (repoId) {
+                var folderUrl = cmisServerUrl + '/alfresco/cmisbrowser/' + repoId + cmisRootFolder;
                 $.ajax({
-                  url: cmisServerUrl + '/alfresco/cmisbrowser/' + repoId + cmisRootFolder,
+                  url: folderUrl,
                   type: 'GET',
                   headers: headers,
                   success: function (data) {
-                    renderFolderEntries(data.objects || []);
+                    renderFolderEntries(folderUrl, data.objects || []);
                   },
                   error: handleError
                 });

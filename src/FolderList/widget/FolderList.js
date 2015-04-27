@@ -100,11 +100,12 @@ require({
 
           function renderFolderEntries(data) {
             var output = $('.cmis-folder-list'),
-                ul = $('<ul class="list-group">');
+                //ul = $('<ul class="list-group">');
+                list = $('<div class="list-group">');
             output.empty();
             
             data.forEach(function (entry) {
-              var li = $('<li class="list-group-item">'),
+              var listItem = $('<a class="list-group-item" href="#">'),
                   props = entry.object.properties,
                   objType = props['cmis:objectTypeId'].value;
                   
@@ -116,21 +117,28 @@ require({
                   icon = $('<i class="fa fa-folder-o">'),
                   path = cmisRootFolder + props['cmis:path'].value;
               
-              var link = $('<a href="#">');
-              link.on('click', function (e) {
+              listItem.on('click', function (e) {
                 e.preventDefault();
+                                
+                var parentList = e.target.parentNode;
+                if (parentList && parentList.childNodes.length > 0) {
+                  for (var i = 0; i < parentList.childNodes.length; i++) {
+                    parentList.childNodes[i].classList.remove('active');
+                  }    
+                }
+                e.target.classList.add('active');
+                
                 var msg = { 'action': 'setFolder', 'value': path };
                 var emitter = document;
                 emitter.dispatchEvent(new CustomEvent('cmisMessage', { detail: msg }));
               });
               
-              link.append(icon);
-              link.append(' ' + name);
-              li.append(link);
-              ul.append(li);
+              listItem.append(icon);
+              listItem.append(' ' + name);
+              list.append(listItem);
             });
 
-            output.append(ul);
+            output.append(list);
           }
         
           $.ajax({
