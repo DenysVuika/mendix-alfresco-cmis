@@ -12,6 +12,14 @@ require({
 ], function (declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, domQuery, domProp, domGeom, domClass, domStyle, domConstruct, dojoArray, lang, text, $, widgetTemplate) {
     'use strict';
   
+    var _serverUrl = null;
+    var _currentFolder = null;
+    var _auth = null;
+  
+    function handleError (jqXHR, textStatus, errorThrown) {
+      alert('error getting cmis content');
+    }
+  
     // Declare widget's prototype.
     return declare('FolderContent.widget.FolderContent', [ _WidgetBase, _TemplatedMixin ], {
         // _TemplatedMixin will create our dom node using this HTML template.
@@ -37,7 +45,43 @@ require({
         postCreate: function () {
             console.log(this.id + '.postCreate');
             this.cmisContent = $('.cmis-folder-content');
-            this._setupEvents();            
+            this._setupEvents();
+            this._setupUpload();
+        },
+      
+        _setupUpload: function () {
+          var form = $('.cmis-upload-form', this.domNode);
+          var formFile = $('.cmis-upload-file', form);
+          form.on('submit', function (e) {
+            e.preventDefault();
+            if (formFile.length > 0 && formFile[0].files.length > 0) {
+              var file = formFile[0].files[0];
+              var data = new FormData();
+              data.append('cmisaction', 'createDocument');
+              data.append('propertyId[0]', 'cmis:name');
+              data.append('propertyValue[0]', file.name);
+              data.append('propertyId[1]', 'cmis:objectTypeId');
+              data.append('propertyValue[1]', 'cmis:document');
+              data.append('file', file);
+              
+              $.ajax({
+                url: _serverUrl + '/alfresco/api/-default-/public/cmis/versions/1.1/browser' + _currentFolder,
+                method: 'POST',
+                headers: _auth,
+                data: data,
+                processData: false,
+                contentType: false,
+                enctype: 'multipart/form-data',
+                success: function (res) {
+                  formFile.val('');
+                  this._listFolder();
+                }.bind(this),
+                error: function (xhr, status, ex) {
+                  alert(xhr.responseJSON.message || 'Error uploading document.');
+                }
+              });
+            }
+          }.bind(this));
         },
 
         // mxui.widget._WidgetBase.update is called when context is changed or initialized. Implement to re-render and / or fetch data.
@@ -45,6 +89,13 @@ require({
             console.log(this.id + '.update');
 
             this._contextObj = obj;
+            _serverUrl = this._contextObj ? this._contextObj.get(this.cmisServerUrl) : "";
+            var login = this._contextObj ? this._contextObj.get(this.cmisServerLogin) : "";
+            var password = this._contextObj ? this._contextObj.get(this.cmisServerPassword) : "";
+            _currentFolder = this._contextObj ? this._contextObj.get(this.cmisRootFolder) : "";
+            // using basic auth for testing purposes only
+            _auth = {"Authorization": "Basic " + btoa(login + ":" + password)};
+          
             this._resetSubscriptions();
             this._updateRendering();
             this._listFolder();
@@ -81,21 +132,17 @@ require({
         var msg = e.detail;
         if (msg && msg.action) {
           if (msg.action === 'setFolder') {
-            this._listFolder(msg.value);
+            _currentFolder = msg.value;
+            this._listFolder();
           }
         }
       },
       
-      _listFolder: function (folder) {
-        var cmisServerUrl = this._contextObj ? this._contextObj.get(this.cmisServerUrl) : "",
-            cmisServerLogin = this._contextObj ? this._contextObj.get(this.cmisServerLogin) : "",
-            cmisServerPassword = this._contextObj ? this._contextObj.get(this.cmisServerPassword) : "",
-            cmisRootFolder = folder || (this._contextObj ? this._contextObj.get(this.cmisRootFolder) : ""),
-            headers = {"Authorization": "Basic " + btoa(cmisServerLogin + ":" + cmisServerPassword)};
+      _listFolder: function () {        
         
-        function handleError (jqXHR, textStatus, errorThrown) {
+        /*function handleError (jqXHR, textStatus, errorThrown) {
           alert('error getting cmis content');
-        }
+        }*/
         
         function renderFolderEntries(folderUrl, data) {
           var output = $('.cmis-folder-content'),
@@ -138,9 +185,9 @@ require({
         }
         
         $.ajax({
-            url: cmisServerUrl + '/alfresco/cmisbrowser',
+            url: _serverUrl + '/alfresco/cmisbrowser',
             type: 'GET',
-            headers: headers,
+            headers: _auth,
             success: function (data, textStatus, jqXHR) {
               var keys = Object.keys(data),
                   repoId = null;
@@ -149,11 +196,11 @@ require({
               }
 
               if (repoId) {
-                var folderUrl = cmisServerUrl + '/alfresco/cmisbrowser/' + repoId + cmisRootFolder;
+                var folderUrl = _serverUrl + '/alfresco/cmisbrowser/' + repoId + _currentFolder;
                 $.ajax({
                   url: folderUrl,
                   type: 'GET',
-                  headers: headers,
+                  headers: _auth,
                   success: function (data) {
                     renderFolderEntries(folderUrl, data.objects || []);
                   },
