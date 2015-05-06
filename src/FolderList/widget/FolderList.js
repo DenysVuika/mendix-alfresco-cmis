@@ -1,5 +1,5 @@
 /*jslint white:true, nomen: true, plusplus: true */
-/*global mx, define, require, browser, devel, console, btoa, alert */
+/*global mx, define, require, browser, devel, console, btoa, alert, document, CustomEvent */
 /*mendix */
 /*
     FolderList
@@ -100,7 +100,6 @@ require({
 
           function renderFolderEntries(data) {
             var output = $('.cmis-folder-list'),
-                //ul = $('<ul class="list-group">');
                 list = $('<div class="list-group">');
             output.empty();
             

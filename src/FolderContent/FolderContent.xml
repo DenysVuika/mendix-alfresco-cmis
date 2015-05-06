@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<widget id="Hello World.widget.Hello World" needsEntityContext="true" xmlns="http://www.mendix.com/widget/1.0/">
+<widget id="FolderContent.widget.FolderContent" needsEntityContext="true" xmlns="http://www.mendix.com/widget/1.0/">
   <name>Folder Content</name>
-  <description>>Sample CMIS Widget</description>
+  <description>Displays content of a Folder</description>
 
   <icon></icon>
 
@@ -40,4 +40,3 @@
     </property>
   </properties>
 </widget>
-

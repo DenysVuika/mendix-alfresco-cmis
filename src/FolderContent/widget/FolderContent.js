@@ -1,34 +1,19 @@
 /*jslint white:true, nomen: true, plusplus: true */
 /*global mx, define, require, browser, devel, console, btoa, alert */
 /*mendix */
-/*
-    Hello World
-    ========================
-
-    @file      : Hello World.js
-    @version   : 1.0.0
-    @author    : Denis Vuyka
-    @date      : Fri, 17 Apr 2015 05:58:15 GMT
-    @copyright : Denis Vuyka
-    @license   : MIT
-
-    Documentation
-    ========================
-    Shows folder content
-*/
 
 // Required module list. Remove unnecessary modules, you can always get them back from the boilerplate.
 require({
-    packages: [{ name: 'jquery', location: '../../widgets/Hello World/lib', main: 'jquery-1.11.2.min' }]
+    packages: [{ name: 'jquery', location: '../../widgets/FolderContent/lib', main: 'jquery-1.11.2.min' }]
 }, [
     'dojo/_base/declare', 'mxui/widget/_WidgetBase', 'dijit/_TemplatedMixin',
     'mxui/dom', 'dojo/dom', 'dojo/query', 'dojo/dom-prop', 'dojo/dom-geometry', 'dojo/dom-class', 'dojo/dom-style', 'dojo/dom-construct', 'dojo/_base/array', 'dojo/_base/lang', 'dojo/text',
-    'jquery', 'dojo/text!Hello World/widget/template/Hello World.html'
+    'jquery', 'dojo/text!FolderContent/widget/template/FolderContent.html'
 ], function (declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, domQuery, domProp, domGeom, domClass, domStyle, domConstruct, dojoArray, lang, text, $, widgetTemplate) {
     'use strict';
   
     // Declare widget's prototype.
-    return declare('Hello World.widget.Hello World', [ _WidgetBase, _TemplatedMixin ], {
+    return declare('FolderContent.widget.FolderContent', [ _WidgetBase, _TemplatedMixin ], {
         // _TemplatedMixin will create our dom node using this HTML template.
         templateString: widgetTemplate,
 
